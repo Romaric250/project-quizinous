@@ -27,3 +27,22 @@ export async function POST(req:Request){
         
     }
 }
+
+export async function GET(req:Request){
+    try {
+
+        const subjects = await db.subject.findMany()
+
+        if (!subjects) {
+            return new NextResponse("subjects not found", { status: 404 });
+        }
+
+        return new NextResponse(JSON.stringify(subjects), { status: 200 });
+        
+    } catch (error:any) {
+        console.log(error.message)
+        return new NextResponse("internal server error", {status:500})
+        
+        
+    }
+}
