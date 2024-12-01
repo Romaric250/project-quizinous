@@ -25,3 +25,52 @@ export async function GET(req:Request, {params}:{params:Promise<{subjectId:strin
         
     }
 }
+
+export async function PUT(req:Request, {params}:{params:Promise<{subjectId:string}>}){
+    try {
+        const {subjectId} = await params;
+
+        const { name } = await req.json();
+
+        if(!name) { 
+            return new NextResponse("name is required", {status:404})
+        }
+
+        await db.subject.update({
+            where:{
+                id:subjectId as string 
+            },
+            data:{
+                name:name as string
+            }
+        })
+
+        return new NextResponse("subject updated", { status: 200 });
+
+        
+    } catch (error:any) {
+        console.log(error.message)
+        return new NextResponse("internal server error", {status:500})
+        
+    }
+}
+
+export async function DELETE(req:Request, {params}:{params:Promise<{subjectId:string}>}){
+    try {
+        const {subjectId} = await params;
+
+        await db.subject.delete({
+            where:{
+                id:parseInt(subjectId)
+            }
+        })
+
+        return new NextResponse("subject deleted", { status: 200 });
+
+        
+    } catch (error:any) {
+        console.log(error.message)
+        return new NextResponse("internal server error", {status:500})
+            
+        }
+    }
