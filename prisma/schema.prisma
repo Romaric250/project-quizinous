@@ -12,3 +12,62 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @map("_id") @default(cuid()) @db.ObjectId
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  quizScores QuizScore[]
+}
+
+model Subject{
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  quizzes  Quiz[]
+  
+}
+
+
+model Quiz {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  subjectId  String     @db.ObjectId
+  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  questions Question[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Question {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  quizId        String    @db.ObjectId
+  quiz          Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  text          String
+  answers       Answer[]
+  correctAnswer String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Answer {
+  
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  questionId String   @db.ObjectId
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model QuizScore {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score     Int      @default(0)
+  createdAt DateTime @default(now())
+  updateAt  DateTime @default(now())
+}
+
